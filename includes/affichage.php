@@ -38,11 +38,9 @@
         <label for="d100">D100</label>
 
         <input type="number" id="d100" name="d100" min="0" max="10" value="0"><br>
-        <!--
+
         <label for="user_number">Ajouter un nombre</label>
         <input type="number" name="user_number" id="user_number">
-
-    -->
 
         <input type="submit" value="Valider">
     </form>
@@ -126,22 +124,36 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
 
             for ($i = 1; $i <= $value; $i++) {
 
-                $tabDes = "tabd".$typeDes;
+                $tabDes = "tabd" . $typeDes;
                 $table = &$$tabDes;
                 array_push($table, rand(1, $typeDes));
-                
-                
             }
         }
     }
-    echo "d2: ".implode(",",$tabd2)."<br>";
-    echo "d4: ".implode(",",$tabd4)."<br>";
-    echo "d6: ".implode(",",$tabd6)."<br>";
-    echo "d8: ".implode(",",$tabd8)."<br>";
-    echo "d10: ".implode(",",$tabd10)."<br>";
-    echo "d12: ".implode(",",$tabd12)."<br>";
-    echo "d20: ".implode(",",$tabd20)."<br>";
-    echo "d100: ".implode(",",$tabd100)."<br>";
-    
 
+
+
+    echo "d2: " . implode(",", $tabd2) . "<br>";
+    echo "d4: " . implode(",", $tabd4) . "<br>";
+    echo "d6: " . implode(",", $tabd6) . "<br>";
+    echo "d8: " . implode(",", $tabd8) . "<br>";
+    echo "d10: " . implode(",", $tabd10) . "<br>";
+    echo "d12: " . implode(",", $tabd12) . "<br>";
+    echo "d20: " . implode(",", $tabd20) . "<br>";
+    echo "d100: " . implode(",", $tabd100) . "<br>";
+
+    $totald2 = array_sum($tabd2);
+    $totald4 = array_sum($tabd4);
+    $totald6 = array_sum($tabd6);
+    $totald8 = array_sum($tabd8);
+    $totald10 = array_sum($tabd10);
+    $totald12 = array_sum($tabd12);
+    $totald20 = array_sum($tabd20);
+    $totald100 = array_sum($tabd100);
+
+
+
+    $b = array("a" => $totald2, "b" => $totald4, "c" => $totald6, "d" => $totald8, "e" => $totald10, "f" => $totald12, "g" => $totald20, "h" => $totald100);
+    $totalOK = array_sum($b);
+    echo $totalOK + $_POST["user_number"];
 }
