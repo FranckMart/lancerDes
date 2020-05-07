@@ -1,7 +1,7 @@
 <?php
 /*
  Plugin Name: Lancer de dès
- Description: Modul Mini jeu de lancer de dès 
+ Description: Modul Minis jeu de lancer de dès 
  Author: Martinez Franck
  Version: 1.0
 */
@@ -12,12 +12,13 @@ function addLinkMenuAdmin(){
         "Lancer de dès",
         "Lancer de dès",
         "manage_options",
-        "lancer_de_Des/includes/affichage.php",
+        "lancerDes/includes/affichage.php",
         "",
         //<a target="_blank" href="https://icones8.fr/icons/set/dice">Dé icon</a> icône par <a target="_blank" href="https://icones8.fr">Icons8</a>//
-        plugins_url("lancer_de_Des/img/des.png"),
+        plugins_url("lancerDes/img/des.png"),
         100
     );
 }
 
+// Ajout du plug in dans la barre de menu
 add_action("admin_menu","addLinkMenuAdmin");

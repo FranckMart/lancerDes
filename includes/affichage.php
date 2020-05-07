@@ -5,12 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <!-- Ajout du style -->
+    <style>
+        table,
+        th {
+            border: 1px solid #333;
+        }
+
+        thead,
+        tfoot {
+            background-color: #333;
+            color: #fff;
+        }
+    </style>
 </head>
 
 <body>
 
+
+    <!-- Ajout de la variable SuperGlobal qui permmet de recupérer les infrormations de la bdd Wordpress_ics -->
     <?php
-    require_once("bdd.php");
     global $wpdp;
     ?>
 
@@ -32,6 +46,7 @@
 
     <!-- Ici on créer le formulaire d'ajout de nombre -->
     <h1>Lancer de dés</h1>
+    <!-- Action sur la même page la récupérations des informations ce fera grâce au name des input  -->
     <form action="" method="post">
         <label for="d2">D2</label>
 
@@ -76,7 +91,8 @@
 
 <?php
 
-//error_reporting(0);
+// Nous avons pas su régler une erreur qui n'empéche pas le bon fonctionnement du code 
+error_reporting(0);
 
 
 // Je vérifie si au moins un champs input est remplis
@@ -96,25 +112,31 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
     $tabd100 = [];
 
 
+    // On parcours tout les requêtes POST du formulaire
     foreach ($dice as $key => $value) {
 
+        // Si la valeur est supérieur à 0 alors on affiche les informations
         if ($value > 0) {
 
 
-            // Tu rajoutes une fonction pour rajouter un nombre ton dernier champ input
-            $typeDes = substr($key, 1); // je recupère le nombre de face en fonction du nom du champ input
+            // je recupère le nombre de face en fonction du nom du champ input
+            $typeDes = substr($key, 1);
 
+            // Je parcours les valeurs (cela représente le nombre de lancés de chaque dés)
+            // Je créer une boucle for pour intégrer les bon nombre de resultats de chaque lancé de dés
             for ($i = 1; $i <= $value; $i++) {
 
+                // $tabes vas ajoutés "tabd" sur chaque tableau pour ainsi récupérer le bon tableau
                 $tabDes = "tabd" . $typeDes;
                 $table = &$$tabDes;
+                // On Push les resultat dans le tableau voulu avec des nombre aléatoire entre 1 et $typesDes
                 array_push($table, rand(1, $typeDes));
             }
         }
     }
 
 
-
+    // On Affiche les résultats
     echo "d2: " . implode(",", $tabd2) . "<br>";
     echo "d4: " . implode(",", $tabd4) . "<br>";
     echo "d6: " . implode(",", $tabd6) . "<br>";
@@ -124,6 +146,7 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
     echo "d20: " . implode(",", $tabd20) . "<br>";
     echo "d100: " . implode(",", $tabd100) . "<br>";
 
+    // On récupère le total des valeirs de chaques tableaux
     $totald2 = array_sum($tabd2);
     $totald4 = array_sum($tabd4);
     $totald6 = array_sum($tabd6);
@@ -134,9 +157,11 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
     $totald100 = array_sum($tabd100);
 
 
-
+    // On additionne toutes les valeurs de chaque tableaux 
     $b = array("a" => $totald2, "b" => $totald4, "c" => $totald6, "d" => $totald8, "e" => $totald10, "f" => $totald12, "g" => $totald20, "h" => $totald100);
     $total = array_sum($b);
+
+    // On Affiche le résultat
     $resultat = $total + $_POST["user_number"];
     echo $hours;
     printf($name . " a eu ");
@@ -144,31 +169,57 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
 
 
 
-    // Cette methode me permet de créer la table qui stockera tous les jets réalisés
-    $bdd = $showResult->prepare("SELECT * FROM `wpICS_dice` ORDER BY `dice_id` DESC LIMIT 500");
+    // On Insert les résultat dans la table intégré à la bdd WP 
+    $wpdb->insert(
+        $wpdb->prefix . 'dice',
+        array(
+            'dice_user' => $name, // On intègre le pseudo de l'utilisateur 
+            'dice_result' => $resultat // On intègre le resultat
+        ),
+        array(
+            '%s', // intègre le type de données au champ de la table ici on ajoute une chaine de caractère
+            '%d' // intègre le type de données au champ de la table ici on ajoute un entier
+        )
+    );
+    showALL(); // Appel de la fonction qui récupère tous les 500 derniers resultats
+    install();
+}
 
-    $showResult->setFetchMode(PDO::FETCH_ASSOC);
+// On insère la table à la bdd quand l'utilisateur valide sont lancer
+function install(){
+    global $wpdb;
+    $wpdb->query("CREATE TABLE IF NOT EXISTS {$wpdb->prefix}dice (dice_id INT AUTO_INCREMENT PRIMARY KEY, dice_date datetime NOT NULL DEFAULT CURRENT_TIMESTAMP, dice_result int(100) NOT NULL, dice_user VARCHAR(255) NOT NULL);");
+}
 
-    $showResult->execute();
+function showALL()
+{
+    // Requêtes Sql qui me permet de selectionner les 500 derniers resultats
+    global $wpdb;
+    // get_results renvois le resultats d'une table WP
+    $showResult = $wpdb->get_results("SELECT * FROM `{$wpdb->prefix}dice` ORDER BY `dice_id` DESC LIMIT 500");
+?>
+    <!-- Création d'un tableau qui affichera les 500 derniers résultats -->
+    <table>
+        <thead>
+            <tr>
+                <th colspan="2">Score Joueurs</th>
+            </tr>
+        </thead>
+        <tbody>
 
 
-    if ($showResult->rowCount() == 1) {
-        $wpdb->insert(
-            $wpdb->prefix . 'dice',
-            array(
-                'dice_user' => $name,
-                'dice_result' => $resultat
-            ),
-            array(
-                '%s',
-                '%d'
-            )
-        );
-        //showALL();
-       
+        <?php
 
+        // Utilisation d'un forEach pour parcourir le tableau renvoyé par la requête SQL
         foreach ($showResult as $values) {
-            echo $values["dice_result"];
+            echo "<tr><th>" . $values->dice_user . "</th>";
+            echo "<th>" . $values->dice_result . "</th>";
+            echo "<th>" . $values->dice_date . "</th></tr>";
         }
     }
-}
+
+        ?>
+
+
+        </tbody>
+    </table>
