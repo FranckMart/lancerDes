@@ -8,42 +8,80 @@
 </head>
 
 <body>
-    <h1>Lancer de dés</h1>
-    <form action="" method="post">
-        <label for="d2">D2</label>
 
-        <input type="number" id="d2" name="d2" min="0" max="10" value="0"><br>
-        <label for="d4">D4</label>
 
-        <input type="number" id="d4" name="d4" min="0" max="10" value="0"><br>
-        <label for="d6">D6</label>
+<?php if (is_user_logged_in()) : ?>
+    <a href="<?php echo wp_logout_url(get_permalink()); ?>">Logout</a>
+<?php else : ?>
+    <a href="<?php echo wp_login_url(get_permalink()); ?>">Login</a>
+<?php endif;?>
 
-        <input type="number" id="d6" name="d6" min="0" max="10" value="0"><br>
+    <?php
 
-        <label for="d8">D8</label>
+$current_user = wp_get_current_user();
+ 
 
-        <input type="number" id="d8" name="d8" min="0" max="10" value="0"><br>
+$name = esc_html($current_user->user_login);
+/*
+ * @example Safe usage: $current_user = wp_get_current_user();
+ * if ( ! ( $current_user instanceof WP_User ) ) {
+ *     return;
+ * }
+ */
 
-        <label for="d10">D10</label>
 
-        <input type="number" id="d10" name="d10" min="0" max="10" value="0"><br>
-        <label for="d12">D12</label>
+    /*
+    function shortcode()
+    {
+        if (is_user_logged_in()) {
+            ob_start();
+            */
+    ?>
+            <h1>Lancer de dés</h1>
+            <form action="" method="post">
+                <label for="d2">D2</label>
 
-        <input type="number" id="d12" name="d12" min="0" max="10" value="0"><br>
+                <input type="number" id="d2" name="d2" min="0" max="10" value="0"><br>
+                <label for="d4">D4</label>
 
-        <label for="d20">D20</label>
+                <input type="number" id="d4" name="d4" min="0" max="10" value="0"><br>
+                <label for="d6">D6</label>
 
-        <input type="number" id="d20" name="d20" min="0" max="10" value="0"><br>
+                <input type="number" id="d6" name="d6" min="0" max="10" value="0"><br>
 
-        <label for="d100">D100</label>
+                <label for="d8">D8</label>
 
-        <input type="number" id="d100" name="d100" min="0" max="10" value="0"><br>
+                <input type="number" id="d8" name="d8" min="0" max="10" value="0"><br>
 
-        <label for="user_number">Ajouter un nombre</label>
-        <input type="number" name="user_number" id="user_number">
+                <label for="d10">D10</label>
 
-        <input type="submit" value="Valider">
-    </form>
+                <input type="number" id="d10" name="d10" min="0" max="10" value="0"><br>
+                <label for="d12">D12</label>
+
+                <input type="number" id="d12" name="d12" min="0" max="10" value="0"><br>
+
+                <label for="d20">D20</label>
+
+                <input type="number" id="d20" name="d20" min="0" max="10" value="0"><br>
+
+                <label for="d100">D100</label>
+
+                <input type="number" id="d100" name="d100" min="0" max="10" value="0"><br>
+
+                <label for="user_number">Ajouter un nombre</label>
+                <input type="number" name="user_number" id="user_number">
+
+                <input type="submit" value="Valider">
+            </form>
+
+    <?php
+    /*
+        } else {
+            echo "Veuillez vous connecter";
+        }
+    }
+    */
+    ?>
 
 </body>
 
@@ -51,6 +89,7 @@
 
 
 <?php
+error_reporting(0);
 /*
 interface ModulesDes_widget_interface
 {
@@ -121,6 +160,7 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
             // Tu rajoutes une fonction pour rajouter un nombre ton dernier champ input
             $typeDes = substr($key, 1); // je recupère le nombre de face en fonction du nom du champ input
 
+            intval($typeDes);
 
             for ($i = 1; $i <= $value; $i++) {
 
@@ -154,6 +194,10 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
 
 
     $b = array("a" => $totald2, "b" => $totald4, "c" => $totald6, "d" => $totald8, "e" => $totald10, "f" => $totald12, "g" => $totald20, "h" => $totald100);
-    $totalOK = array_sum($b);
-    echo $totalOK + $_POST["user_number"];
+    $total = array_sum($b);
+    $resultat = $total + $_POST["user_number"];
+    printf($name ." a eu ");
+    echo $resultat. "points";
 }
+
+
