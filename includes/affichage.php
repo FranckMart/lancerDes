@@ -17,15 +17,20 @@
 
     <?php
 
-    // Récupère le pseudo de l'utilisateur 
+    // Fonction WP qui récupère les informations de l'utilisateur
     $current_user = wp_get_current_user();
+
+    // Récupère le pseudo de l'utilisateur 
     $name = esc_html($current_user->user_login);
 
+    // Récupère la date dans ce format 2020-05-07 13:40:36
     $hours =  current_time('mysql') . '<br />';
+
 
     ?>
 
 
+    <!-- Ici on créer le formulaire d'ajout de nombre -->
     <h1>Lancer de dés</h1>
     <form action="" method="post">
         <label for="d2">D2</label>
@@ -70,6 +75,7 @@
 
 
 <?php
+
 //error_reporting(0);
 
 
@@ -78,9 +84,7 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
 
 
 
-    //$nbLancer = [$_POST["d2"], $_POST["d4"], $_POST["d6"], $_POST["d8"], $_POST["d10"], $_POST["d12"], $_POST["d20"], $_POST["d100"]];
-
-
+    // Création de plusieurs tableaux pour stocker les valeurs retourné au nombre de lancer 
     $dice = $_POST;
     $tabd2 = [];
     $tabd4 = [];
@@ -95,12 +99,10 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
     foreach ($dice as $key => $value) {
 
         if ($value > 0) {
-            //echo $value.$key."<br>";
-            # code...
+
+
             // Tu rajoutes une fonction pour rajouter un nombre ton dernier champ input
             $typeDes = substr($key, 1); // je recupère le nombre de face en fonction du nom du champ input
-
-            intval($typeDes);
 
             for ($i = 1; $i <= $value; $i++) {
 
@@ -143,20 +145,14 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
 
 
     // Cette methode me permet de créer la table qui stockera tous les jets réalisés
-    function install()
-    {
+    $bdd = $showResult->prepare("SELECT * FROM `wpICS_dice` ORDER BY `dice_id` DESC LIMIT 500");
 
-        "CREATE TABLE `dice` (
-        `dice_id` int(11) NOT NULL,
-        `dice_user` varchar(255) COLLATE utf8mb4_bin NOT NULL,
-        `dice_result` int(100) NOT NULL,
-        `dice_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin";
+    $showResult->setFetchMode(PDO::FETCH_ASSOC);
+
+    $showResult->execute();
 
 
-
-        $req = "INSERT INTO `dice`(`dice_user`,`dice_result`) 
-            VALUES (:dice_user,:dice_result)";
+    if ($showResult->rowCount() == 1) {
         $wpdb->insert(
             $wpdb->prefix . 'dice',
             array(
@@ -168,28 +164,11 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
                 '%d'
             )
         );
+        //showALL();
+       
 
-        $reqValue = $GLOBALS['bdd']->prepare($req);
-
-        // Pour question de sécurité la requete est préparé pour éviter une injection SQL 
-        // On récupère les informations
-        $reqValue->bindValue(":dice_user", $name);
-        $reqValue->bindValue(":dice_result", $resultat);
-
-
-        if ($$reqValue->execute()) {
-
-            // header('Location:../news.php?insertion=réussi');
-        } else {
-            // header('Location:../news.php?insertion=échec');
+        foreach ($showResult as $values) {
+            echo $values["dice_result"];
         }
-    };
-    install();
+    }
 }
-
-// Cette méthode supprime la table de stockage des jets
-/*
-  function uninstall(){
-    "DROP TABLE `dice`";
-  };
-*/
