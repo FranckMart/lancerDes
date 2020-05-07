@@ -9,79 +9,60 @@
 
 <body>
 
+    <?php
+    require_once("bdd.php");
+    global $wpdp;
+    ?>
 
-<?php if (is_user_logged_in()) : ?>
-    <a href="<?php echo wp_logout_url(get_permalink()); ?>">Logout</a>
-<?php else : ?>
-    <a href="<?php echo wp_login_url(get_permalink()); ?>">Login</a>
-<?php endif;?>
 
     <?php
 
-$current_user = wp_get_current_user();
- 
+    // Récupère le pseudo de l'utilisateur 
+    $current_user = wp_get_current_user();
+    $name = esc_html($current_user->user_login);
 
-$name = esc_html($current_user->user_login);
-/*
- * @example Safe usage: $current_user = wp_get_current_user();
- * if ( ! ( $current_user instanceof WP_User ) ) {
- *     return;
- * }
- */
+    $hours =  current_time('mysql') . '<br />';
 
-
-    /*
-    function shortcode()
-    {
-        if (is_user_logged_in()) {
-            ob_start();
-            */
     ?>
-            <h1>Lancer de dés</h1>
-            <form action="" method="post">
-                <label for="d2">D2</label>
 
-                <input type="number" id="d2" name="d2" min="0" max="10" value="0"><br>
-                <label for="d4">D4</label>
 
-                <input type="number" id="d4" name="d4" min="0" max="10" value="0"><br>
-                <label for="d6">D6</label>
+    <h1>Lancer de dés</h1>
+    <form action="" method="post">
+        <label for="d2">D2</label>
 
-                <input type="number" id="d6" name="d6" min="0" max="10" value="0"><br>
+        <input type="number" id="d2" name="d2" min="0" max="10" value="0"><br>
+        <label for="d4">D4</label>
 
-                <label for="d8">D8</label>
+        <input type="number" id="d4" name="d4" min="0" max="10" value="0"><br>
+        <label for="d6">D6</label>
 
-                <input type="number" id="d8" name="d8" min="0" max="10" value="0"><br>
+        <input type="number" id="d6" name="d6" min="0" max="10" value="0"><br>
 
-                <label for="d10">D10</label>
+        <label for="d8">D8</label>
 
-                <input type="number" id="d10" name="d10" min="0" max="10" value="0"><br>
-                <label for="d12">D12</label>
+        <input type="number" id="d8" name="d8" min="0" max="10" value="0"><br>
 
-                <input type="number" id="d12" name="d12" min="0" max="10" value="0"><br>
+        <label for="d10">D10</label>
 
-                <label for="d20">D20</label>
+        <input type="number" id="d10" name="d10" min="0" max="10" value="0"><br>
+        <label for="d12">D12</label>
 
-                <input type="number" id="d20" name="d20" min="0" max="10" value="0"><br>
+        <input type="number" id="d12" name="d12" min="0" max="10" value="0"><br>
 
-                <label for="d100">D100</label>
+        <label for="d20">D20</label>
 
-                <input type="number" id="d100" name="d100" min="0" max="10" value="0"><br>
+        <input type="number" id="d20" name="d20" min="0" max="10" value="0"><br>
 
-                <label for="user_number">Ajouter un nombre</label>
-                <input type="number" name="user_number" id="user_number">
+        <label for="d100">D100</label>
 
-                <input type="submit" value="Valider">
-            </form>
+        <input type="number" id="d100" name="d100" min="0" max="10" value="0"><br>
 
-    <?php
-    /*
-        } else {
-            echo "Veuillez vous connecter";
-        }
-    }
-    */
-    ?>
+        <label for="user_number">Ajouter un nombre</label>
+        <input type="number" name="user_number" id="user_number">
+
+        <input type="submit" value="Valider">
+    </form>
+
 
 </body>
 
@@ -89,48 +70,15 @@ $name = esc_html($current_user->user_login);
 
 
 <?php
-error_reporting(0);
-/*
-interface ModulesDes_widget_interface
-{
-    // cette méthode construit le widget. Elle devra faire appel au constructeur de la classe parent et accrochera au crochet wp_head le css défini dans la fonction css 
-    // afin de pouvoir lister les 500 derniers jets j'ai décidé de créer un shortcode défini par la fonction liste_jets et accroché avec le shortcode liste_jets grâce à la fonction add_shortcode
-    public function __construct();
+//error_reporting(0);
 
-    // la fonction form permet de créer le formulaire de paramétrage du widget
-    // ici j'ai 2 paramètres : le nom du widget et la liste des dés que l'on peut lancer
-	public function form($instance);
-
-	// Fonction définissant un peu de css
-	public function css(); 
-
-	// Cette fonction contient le corps du module, c'est en appelant cette méthode qu'on affiche le widget
-    public function widget($args, $instance);
-
-    // Cette methode me permet de créer la table qui stockera tous les jets réalisés
-    public static function install();
-
-    // Cette méthode supprime la table de stockage des jets
-	public static function uninstall();
-
-	// Cette fonction me permet de renvoyer un tableau contenant $nb nombres compris entre 0 et $max
-	public static function alea($max, $nb);
-
-	// C'est dans cette fonction que je détermine le comportement de mon shortcode
-	public static function liste_jets($atts, $content);
-
-	// C'est dans cette methode que je vais stocker les éléments des jets
-    public static function traitement();
-}
-*/
 
 // Je vérifie si au moins un champs input est remplis
 if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($_POST["d8"]) || isset($_POST["d10"]) || isset($_POST["d12"]) || isset($_POST["d20"]) || isset($_POST["d100"])) {
 
 
+
     //$nbLancer = [$_POST["d2"], $_POST["d4"], $_POST["d6"], $_POST["d8"], $_POST["d10"], $_POST["d12"], $_POST["d20"], $_POST["d100"]];
-
-
 
 
     $dice = $_POST;
@@ -143,16 +91,8 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
     $tabd20 = [];
     $tabd100 = [];
 
-    function addUserNumber()
-    {
-        if (isset($_POST["user_number"])) {
-            //Ajoute le nombre au résultat
-        }
-    }
 
-
-
-    foreach ($_POST as $key => $value) {
+    foreach ($dice as $key => $value) {
 
         if ($value > 0) {
             //echo $value.$key."<br>";
@@ -196,8 +136,60 @@ if (isset($_POST["d2"]) || isset($_POST["d4"]) || isset($_POST["d6"]) || isset($
     $b = array("a" => $totald2, "b" => $totald4, "c" => $totald6, "d" => $totald8, "e" => $totald10, "f" => $totald12, "g" => $totald20, "h" => $totald100);
     $total = array_sum($b);
     $resultat = $total + $_POST["user_number"];
-    printf($name ." a eu ");
-    echo $resultat. "points";
+    echo $hours;
+    printf($name . " a eu ");
+    echo $resultat . "points";
+
+
+
+    // Cette methode me permet de créer la table qui stockera tous les jets réalisés
+    function install()
+    {
+
+        "CREATE TABLE `dice` (
+        `dice_id` int(11) NOT NULL,
+        `dice_user` varchar(255) COLLATE utf8mb4_bin NOT NULL,
+        `dice_result` int(100) NOT NULL,
+        `dice_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin";
+
+
+
+        $req = "INSERT INTO `dice`(`dice_user`,`dice_result`) 
+            VALUES (:dice_user,:dice_result)";
+        $wpdb->insert(
+            $wpdb->prefix . 'dice',
+            array(
+                'dice_user' => $name,
+                'dice_result' => $resultat
+            ),
+            array(
+                '%s',
+                '%d'
+            )
+        );
+
+        $reqValue = $GLOBALS['bdd']->prepare($req);
+
+        // Pour question de sécurité la requete est préparé pour éviter une injection SQL 
+        // On récupère les informations
+        $reqValue->bindValue(":dice_user", $name);
+        $reqValue->bindValue(":dice_result", $resultat);
+
+
+        if ($$reqValue->execute()) {
+
+            // header('Location:../news.php?insertion=réussi');
+        } else {
+            // header('Location:../news.php?insertion=échec');
+        }
+    };
+    install();
 }
 
-
+// Cette méthode supprime la table de stockage des jets
+/*
+  function uninstall(){
+    "DROP TABLE `dice`";
+  };
+*/
